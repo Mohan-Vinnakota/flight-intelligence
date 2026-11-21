@@ -11,7 +11,7 @@ import psycopg2
 from psycopg2.extras import execute_values
 from psycopg2 import OperationalError, IntegrityError
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
-from datetime import datetime
+from datetime import datetime, timezone
 
 logging.basicConfig(
     level=logging.INFO,
@@ -90,7 +90,7 @@ def fetch_and_store():
     states = fetch_states()
     if not states:
         return 0
-    collected_at = datetime.now().replace(second=0, microsecond=0)  # minute precision for dedup key
+    collected_at = datetime.now(timezone.utc).replace(second=0, microsecond=0, tzinfo=None) # minute precision for dedup key
     records, rejected = [], 0
     for s in states:
         if not validate(s):
