@@ -25,7 +25,7 @@ except Exception as e:
     st.stop()
 
 latest = df[df["collected_at"] == df["collected_at"].max()]
-fresh_sec = int((pd.Timestamp.now() - latest["collected_at"].max()).total_seconds())
+fresh_sec = int((pd.Timestamp.utcnow() - latest["collected_at"].max()).total_seconds())
 
 c1, c2, c3, c4, c5 = st.columns(5)
 c1.metric("Aircraft (latest snapshot)", latest["icao24"].nunique())
