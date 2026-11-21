@@ -122,10 +122,21 @@ def fetch_and_store():
     return len(records)
 
 if __name__ == "__main__":
+    import sys
+
+    run_once = "--once" in sys.argv
+
     init_db()
-    while True:
-        try:
-            fetch_and_store()
-        except Exception as e:
-            log.exception("Cycle failed: %s", e)
-        time.sleep(POLL_INTERVAL)
+
+    if run_once:
+        # Single cycle for scheduled runners (e.g. GitHub Actions cron).
+        # Let failures raise so the Action run is marked failed and shows up
+        # in the Actions tab / logs, instead of silently swallowing errors.
+        fetch_and_store()
+    else:
+        while True:
+            try:
+                fetch_and_store()
+            except Exception as e:
+                log.exception("Cycle failed: %s", e)
+            time.sleep(POLL_INTERVAL)
